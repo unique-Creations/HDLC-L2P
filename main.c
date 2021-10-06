@@ -27,22 +27,30 @@ void detect_flag(bool *f);
 
 /**
  * @param c user character that is to be converted to int.
- *  @brief Adds bit to user_bits array if in correct order.
- *         Increase user_bit_size if bit is added to array.
+ * @brief Adds bit to user_bits array if in correct order.
+ *        Increase user_bit_size if bit is added to array.
  */
 void append_flag_bit(char c);
+
+/**
+ *
+ * @param c
+ * @return
+ */
+int is_bit(char c);
 
 int main() {
     bool flag_detected = false;
     printf("Enter any key:\n");
 
-    //TODO: if user enters a wrong key between flag input, start over.
     while (1) {
         char tmp;
         tmp = (char) getc(stdin);
         detect_flag(&flag_detected);
-        if (tmp == '0' || tmp == '1') {
+        if (is_bit(tmp)) {
             append_flag_bit(tmp);
+        } else if (tmp > '1'){
+            user_bit_size = 0;
         }
         // If HDLC flag is detected, print input.
         if (flag_detected) {
@@ -56,18 +64,26 @@ void detect_flag(bool *f) {
     if (user_bit_size == 8) {
         *f = !*f;
         user_bit_size = 0;
-        printf("\nFlag has been detected\n");
+        printf("\n--Flag detected--\n");
     }
 }
 
 void append_flag_bit(char c) {
     int tmp = c - '0';
     if (tmp == flag[user_bit_size]) {
+        printf("flag appended");
         user_bits[user_bit_size] = tmp;
         user_bit_size += 1;
-    } else {
+        printf("\n size: %d", user_bit_size);
+    } else if (tmp != flag[user_bit_size]){
         user_bit_size = 0;
     }
 }
 
+int is_bit(char c){
+    if(c >= '0' && c <= '1'){
+        return 1;
+    }
+    return 0;
+}
 #pragma clang diagnostic pop
