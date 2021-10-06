@@ -3,15 +3,12 @@
 //
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
 
 /* Initialize global variables */
-int user_bits[8];
-int user_bit_size;
+int flag_bit_idx;
 
 /* Integer array of HDLC flag
  * flag: 01111110
@@ -28,14 +25,16 @@ void detect_flag(bool *f);
 /**
  * @param c user character that is to be converted to int.
  * @brief Adds bit to user_bits array if in correct order.
- *        Increase user_bit_size if bit is added to array.
+ *        Increase flag_bit_idx if bit is added to array.
  */
 void append_flag_bit(char c);
 
 /**
  *
- * @param c
- * @return
+ * @param c char to verify whether bit value has been entered.
+ * @brief is_bit checks whether the char entered by user is 1 or 0 and returns integer
+ *        integer as a boolean value after verification.
+ * @return integer value 1 if char is either 1 or 0 else return integer is 0
  */
 int is_bit(char c);
 
@@ -50,7 +49,7 @@ int main() {
         if (is_bit(tmp)) {
             append_flag_bit(tmp);
         } else if (tmp > '1'){
-            user_bit_size = 0;
+            flag_bit_idx = 0;
         }
         // If HDLC flag is detected, print input.
         if (flag_detected) {
@@ -61,22 +60,19 @@ int main() {
 
 void detect_flag(bool *f) {
     // Check if flag has been received from user.
-    if (user_bit_size == 8) {
+    if (flag_bit_idx == 8) {
         *f = !*f;
-        user_bit_size = 0;
+        flag_bit_idx = 0;
         printf("\n--Flag detected--\n");
     }
 }
 
 void append_flag_bit(char c) {
     int tmp = c - '0';
-    if (tmp == flag[user_bit_size]) {
-        printf("flag appended");
-        user_bits[user_bit_size] = tmp;
-        user_bit_size += 1;
-        printf("\n size: %d", user_bit_size);
-    } else if (tmp != flag[user_bit_size]){
-        user_bit_size = 0;
+    if (tmp == flag[flag_bit_idx]) {
+        flag_bit_idx += 1;
+    } else if (tmp != flag[flag_bit_idx]){
+        flag_bit_idx = 0;
     }
 }
 
